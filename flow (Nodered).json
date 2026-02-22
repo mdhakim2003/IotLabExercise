@@ -1,0 +1,1127 @@
+[
+    {
+        "id": "18d1d6f2a725a778",
+        "type": "mqtt in",
+        "z": "42724ec9b7f2ae5f",
+        "name": "",
+        "topic": "channels/3201453/publish",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "1dc27fb0fe32dab0",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 210,
+        "y": 260,
+        "wires": [
+            [
+                "098d2ab8e0663a95",
+                "527a4e0ccf1b9178",
+                "13549d668be02fca",
+                "5bbed4751d756903"
+            ]
+        ]
+    },
+    {
+        "id": "098d2ab8e0663a95",
+        "type": "debug",
+        "z": "42724ec9b7f2ae5f",
+        "name": "debug 6",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 200,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "527a4e0ccf1b9178",
+        "type": "function",
+        "z": "42724ec9b7f2ae5f",
+        "name": "function to sql",
+        "func": "var p = msg.payload;\n\n// Debug each field type\nnode.warn(\"Log_Timestamp type: \" + typeof p.Log_Timestamp);\nnode.warn(\"Occupancy type: \" + typeof p.Occupancy);\nnode.warn(\"Temperature_Data type: \" + typeof p.Temperature_Data);\nnode.warn(\"Humidity_Data type: \" + typeof p.Humidity_Data);\nnode.warn(\"Pressure_Data type: \" + typeof p.Pressure_Data);\nnode.warn(\"Dust_Data type: \" + typeof p.Dust_Data);\nnode.warn(\"Light_Data type: \" + typeof p.Light_Data);\nnode.warn(\"Distance_Data type: \" + typeof p.Distance_Data);\nnode.warn(\"Fan_State type: \" + typeof p.Fan_State);\n\n// Build SQL statement with fallback values\nvar sqlStmt =\n    \"INSERT INTO ALL_SENS_DATA (\" +\n    \"Log_Timestamp, Occupancy, Temperature_Data, Humidity_Data, Pressure_Data, \" +\n    \"Dust_Data, Light_Data, Distance_Data, Fan_State\" +\n    \") VALUES (\" +\n    (p.Log_Timestamp || 0) + \", \" +\n    (p.Occupancy || 0) + \", \" +\n    (p.Temperature_Data || 0) + \", \" +\n    (p.Humidity_Data || 0) + \", \" +\n    (p.Pressure_Data || 0) + \", \" +\n    (p.Dust_Data || 0) + \", \" +\n    (p.Light_Data || 0) + \", \" +\n    (p.Distance_Data || 0) + \", \" +\n    (p.Fan_State || 0) +\n    \");\";\n\n// Pass SQL to the SQLite node\nmsg.topic = sqlStmt;\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 240,
+        "wires": [
+            [
+                "04b344fefcc60225",
+                "d1acdad3a70ff5f1"
+            ]
+        ]
+    },
+    {
+        "id": "04b344fefcc60225",
+        "type": "debug",
+        "z": "42724ec9b7f2ae5f",
+        "name": "debug 7",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 840,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "d1acdad3a70ff5f1",
+        "type": "sqlite",
+        "z": "42724ec9b7f2ae5f",
+        "mydb": "3978826a125bd6c6",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Database",
+        "x": 820,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1290e3688c2022ce",
+        "type": "sqlite",
+        "z": "42724ec9b7f2ae5f",
+        "mydb": "3978826a125bd6c6",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Database",
+        "x": 350,
+        "y": 880,
+        "wires": [
+            [
+                "6bd1765627453e72",
+                "5975d1b4e5de4d25",
+                "6fe11c635b7a7bc0"
+            ]
+        ]
+    },
+    {
+        "id": "c918ea6607f3b867",
+        "type": "inject",
+        "z": "42724ec9b7f2ae5f",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "SELECT datetime(\"Log_Timestamp\", 'unixepoch') AS log_data_timestamp,\"Occupancy\",\"Temperature_Data\",\"Humidity_Data\",\"Pressure_Data\",\"Dust_Data\",\"Light_Data\",\"Distance_Data\",\"Fan_State\" FROM \"ALL_SENS_DATA\";",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 800,
+        "wires": [
+            [
+                "1290e3688c2022ce"
+            ]
+        ]
+    },
+    {
+        "id": "6bd1765627453e72",
+        "type": "debug",
+        "z": "42724ec9b7f2ae5f",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "5975d1b4e5de4d25",
+        "type": "ui_table",
+        "z": "42724ec9b7f2ae5f",
+        "group": "503394798f01f3e2",
+        "name": "Log_Data_Table",
+        "order": 70,
+        "width": 25,
+        "height": 11,
+        "columns": [
+            {
+                "field": "log_data_timestamp",
+                "title": "Log date",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Occupancy",
+                "title": "Occupancy",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Temperature_Data",
+                "title": "Temperature",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Humidity_Data",
+                "title": "Humidity",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Pressure_Data",
+                "title": "Pressure",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Dust_Data",
+                "title": "Dust",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Light_Data",
+                "title": "Light",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Distance_Data",
+                "title": "Distance",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Fan_State",
+                "title": "Fan state",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 660,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "13549d668be02fca",
+        "type": "function",
+        "z": "42724ec9b7f2ae5f",
+        "name": "Function To Thingspeak",
+        "func": "var p = msg.payload;\n\nvar apiKey = \"E9JLAZ1WMPW7G7CL\";   \n\nmsg.url =\n    \"https://api.thingspeak.com/update?api_key=\" + apiKey +\n    \"&field1=\" + p.Occupancy +\n    \"&field2=\" + p.Temperature_Data +\n    \"&field3=\" + p.Humidity_Data +\n    \"&field4=\" + p.Pressure_Data +\n    \"&field5=\" + p.Dust_Data +\n    \"&field6=\" + p.Light_Data +\n    \"&field7=\" + p.Distance_Data +\n    \"&field8=\" + p.Fan_State;\n\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 120,
+        "wires": [
+            [
+                "355657d45315b669"
+            ]
+        ]
+    },
+    {
+        "id": "355657d45315b669",
+        "type": "http request",
+        "z": "42724ec9b7f2ae5f",
+        "name": "Thingspeak GET URL",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 720,
+        "y": 40,
+        "wires": [
+            [
+                "04c2e715198f3635"
+            ]
+        ]
+    },
+    {
+        "id": "04c2e715198f3635",
+        "type": "debug",
+        "z": "42724ec9b7f2ae5f",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 920,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "6fe11c635b7a7bc0",
+        "type": "function",
+        "z": "42724ec9b7f2ae5f",
+        "name": "function 8 Data to table",
+        "func": "var p = msg.payload;\n\nvar occupancy = [];\nvar temperature = [];\nvar humidity = [];\nvar pressure = [];\nvar dust = [];\nvar light = [];\nvar distance = [];\nvar fan = [];\n\nfor (var i = 0; i < p.length; i++) {\n    var timestamp = p[i].log_data_timestamp;\n\n    occupancy.push({ x: timestamp, y: p[i].Occupancy });\n    temperature.push({ x: timestamp, y: p[i].Temperature_Data });\n    humidity.push({ x: timestamp, y: p[i].Humidity_Data });\n    pressure.push({ x: timestamp, y: p[i].Pressure_Data });\n    dust.push({ x: timestamp, y: p[i].Dust_Data });\n    light.push({ x: timestamp, y: p[i].Light_Data });\n    distance.push({ x: timestamp, y: p[i].Distance_Data });\n    fan.push({ x: timestamp, y: p[i].Fan_State });\n}\n\nfunction format(seriesName, label, data) {\n    return [{\n        series: [seriesName],\n        labels: [label],\n        data: [data]\n    }];\n}\n\nreturn [\n    { payload: format(\"log date\", \"Occupancy\", occupancy) },\n    { payload: format(\"log date\", \"Temperature\", temperature) },\n    { payload: format(\"log date\", \"Humidity\", humidity) },\n    { payload: format(\"log date\", \"Pressure\", pressure) },\n    { payload: format(\"log date\", \"Dust\", dust) },\n    { payload: format(\"log date\", \"Light\", light) },\n    { payload: format(\"log date\", \"Distance\", distance) },\n    { payload: format(\"log date\", \"Fan State\", fan) }\n];",
+        "outputs": 8,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 960,
+        "wires": [
+            [
+                "30c0098da8b0fb5c"
+            ],
+            [
+                "0ddd0e51f78176c1"
+            ],
+            [
+                "2b4c106cf43990d3"
+            ],
+            [
+                "255a1d3fc42c9d51"
+            ],
+            [
+                "82fdb9d211c8327a"
+            ],
+            [
+                "419f275152cf8f6a"
+            ],
+            [
+                "d5d528d934c5d721"
+            ],
+            [
+                "f97a56df2e10ffe1"
+            ]
+        ]
+    },
+    {
+        "id": "5bbed4751d756903",
+        "type": "function",
+        "z": "42724ec9b7f2ae5f",
+        "name": "function For Monitoring",
+        "func": "var p = msg.payload;\nvar msg1 = {payload : p.Occupancy};\nvar msg2 = {payload : p.Temperature_Data};\nvar msg3 = {payload : p.Humidity_Data};\nvar msg4 = {payload : p.Pressure_Data};\nvar msg5 = {payload : p.Dust_Data};\nvar msg6 = {payload : p.Light_Data};\nvar msg7 = {payload : p.Pressure_Data};\nvar msg8 = {payload : p.Fan_State};\n\nreturn [msg1, msg2, msg3, msg4, msg5, msg6, msg7, msg8,];",
+        "outputs": 8,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 460,
+        "wires": [
+            [
+                "145da546d00184dc"
+            ],
+            [
+                "1e89240a290371cf"
+            ],
+            [
+                "599ef720ea235214"
+            ],
+            [
+                "023c5211ecc1c4de"
+            ],
+            [
+                "651d2f88042f47af"
+            ],
+            [
+                "75c922f753cc35ab"
+            ],
+            [
+                "0904597b2229d52c"
+            ],
+            [
+                "14f57c51ee74f6f1"
+            ]
+        ]
+    },
+    {
+        "id": "985def4f910de431",
+        "type": "group",
+        "z": "42724ec9b7f2ae5f",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "0ddd0e51f78176c1",
+            "2b4c106cf43990d3",
+            "30c0098da8b0fb5c",
+            "255a1d3fc42c9d51",
+            "82fdb9d211c8327a",
+            "419f275152cf8f6a",
+            "d5d528d934c5d721",
+            "f97a56df2e10ffe1"
+        ],
+        "x": 834,
+        "y": 739,
+        "w": 292,
+        "h": 362
+    },
+    {
+        "id": "0ddd0e51f78176c1",
+        "type": "ui_chart",
+        "z": "42724ec9b7f2ae5f",
+        "g": "985def4f910de431",
+        "name": "",
+        "group": "503394798f01f3e2",
+        "order": 3,
+        "width": 8,
+        "height": 6,
+        "label": "Temperature vs Timestamp",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "YYYY-MM-DD HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 980,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2b4c106cf43990d3",
+        "type": "ui_chart",
+        "z": "42724ec9b7f2ae5f",
+        "g": "985def4f910de431",
+        "name": "",
+        "group": "503394798f01f3e2",
+        "order": 5,
+        "width": 8,
+        "height": 6,
+        "label": "Humidity vs Timestamp",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "YYYY-MM-DD HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 970,
+        "y": 860,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "30c0098da8b0fb5c",
+        "type": "ui_chart",
+        "z": "42724ec9b7f2ae5f",
+        "g": "985def4f910de431",
+        "name": "",
+        "group": "503394798f01f3e2",
+        "order": 1,
+        "width": 8,
+        "height": 6,
+        "label": "Occupancy x Timestamp",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "YYYY-MM-DD HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 970,
+        "y": 780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "255a1d3fc42c9d51",
+        "type": "ui_chart",
+        "z": "42724ec9b7f2ae5f",
+        "g": "985def4f910de431",
+        "name": "",
+        "group": "503394798f01f3e2",
+        "order": 24,
+        "width": 8,
+        "height": 6,
+        "label": "Pressure vs Timestamp",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "YYYY-MM-DD HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 970,
+        "y": 900,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "82fdb9d211c8327a",
+        "type": "ui_chart",
+        "z": "42724ec9b7f2ae5f",
+        "g": "985def4f910de431",
+        "name": "",
+        "group": "503394798f01f3e2",
+        "order": 26,
+        "width": 8,
+        "height": 6,
+        "label": "Dust vs Timestamp",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "YYYY-MM-DD HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 950,
+        "y": 940,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "419f275152cf8f6a",
+        "type": "ui_chart",
+        "z": "42724ec9b7f2ae5f",
+        "g": "985def4f910de431",
+        "name": "",
+        "group": "503394798f01f3e2",
+        "order": 28,
+        "width": 8,
+        "height": 6,
+        "label": "Light vs Timestamp",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "YYYY-MM-DD HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 950,
+        "y": 980,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d5d528d934c5d721",
+        "type": "ui_chart",
+        "z": "42724ec9b7f2ae5f",
+        "g": "985def4f910de431",
+        "name": "",
+        "group": "503394798f01f3e2",
+        "order": 48,
+        "width": 10,
+        "height": 6,
+        "label": "Distance vs Timestamp",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "YYYY-MM-DD HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 970,
+        "y": 1020,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f97a56df2e10ffe1",
+        "type": "ui_chart",
+        "z": "42724ec9b7f2ae5f",
+        "g": "985def4f910de431",
+        "name": "",
+        "group": "503394798f01f3e2",
+        "order": 50,
+        "width": 9,
+        "height": 6,
+        "label": "Fan State x Timestamp",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "YYYY-MM-DD HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 970,
+        "y": 1060,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bc60ce7888013f2d",
+        "type": "group",
+        "z": "42724ec9b7f2ae5f",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "1e89240a290371cf",
+            "599ef720ea235214",
+            "023c5211ecc1c4de",
+            "651d2f88042f47af",
+            "75c922f753cc35ab",
+            "0904597b2229d52c",
+            "145da546d00184dc",
+            "14f57c51ee74f6f1"
+        ],
+        "x": 714,
+        "y": 319,
+        "w": 192,
+        "h": 362
+    },
+    {
+        "id": "1e89240a290371cf",
+        "type": "ui_gauge",
+        "z": "42724ec9b7f2ae5f",
+        "g": "bc60ce7888013f2d",
+        "name": "",
+        "group": "df7b188493601c51",
+        "order": 6,
+        "width": 7,
+        "height": 5,
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#01fe1f",
+            "#eeff00",
+            "#ff0000"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 810,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "599ef720ea235214",
+        "type": "ui_gauge",
+        "z": "42724ec9b7f2ae5f",
+        "g": "bc60ce7888013f2d",
+        "name": "",
+        "group": "df7b188493601c51",
+        "order": 7,
+        "width": 7,
+        "height": 5,
+        "gtype": "wave",
+        "title": "Humidity",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 800,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "023c5211ecc1c4de",
+        "type": "ui_gauge",
+        "z": "42724ec9b7f2ae5f",
+        "g": "bc60ce7888013f2d",
+        "name": "",
+        "group": "df7b188493601c51",
+        "order": 8,
+        "width": 6,
+        "height": 5,
+        "gtype": "compass",
+        "title": "Pressure",
+        "label": "pa",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 800,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "651d2f88042f47af",
+        "type": "ui_gauge",
+        "z": "42724ec9b7f2ae5f",
+        "g": "bc60ce7888013f2d",
+        "name": "",
+        "group": "df7b188493601c51",
+        "order": 9,
+        "width": 6,
+        "height": 5,
+        "gtype": "donut",
+        "title": "Dust",
+        "label": "mg/m³",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 790,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "75c922f753cc35ab",
+        "type": "ui_gauge",
+        "z": "42724ec9b7f2ae5f",
+        "g": "bc60ce7888013f2d",
+        "name": "",
+        "group": "df7b188493601c51",
+        "order": 15,
+        "width": 7,
+        "height": 5,
+        "gtype": "donut",
+        "title": "Light",
+        "label": "lx",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "1000",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 790,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "0904597b2229d52c",
+        "type": "ui_gauge",
+        "z": "42724ec9b7f2ae5f",
+        "g": "bc60ce7888013f2d",
+        "name": "",
+        "group": "df7b188493601c51",
+        "order": 16,
+        "width": 7,
+        "height": 5,
+        "gtype": "compass",
+        "title": "Distance",
+        "label": "cm",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 800,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "145da546d00184dc",
+        "type": "ui_template",
+        "z": "42724ec9b7f2ae5f",
+        "g": "bc60ce7888013f2d",
+        "group": "df7b188493601c51",
+        "name": "Occupancy",
+        "order": 1,
+        "width": 29,
+        "height": 4,
+        "format": "<div\n    style=\"text-align:center; padding:15px; border-radius:12px; background:#1e1e1e; color:white; font-size:1.4em; box-shadow:0 0 10px rgba(0,0,0,0.4);\">\n\n    <div ng-if=\"msg.payload == 1\">\n        <div style=\"font-size:3em; animation: pulse 1.5s infinite;\">\n            👤\n        </div>\n        <div style=\"margin-top:5px; font-weight:bold; color:#4CAF50;\">\n            OCCUPIED\n        </div>\n    </div>\n\n    <div ng-if=\"msg.payload == 0\">\n        <div style=\"font-size:3em; opacity:0.5;\">\n            🚫\n        </div>\n        <div style=\"margin-top:5px; font-weight:bold; color:#F44336;\">\n            EMPTY\n        </div>\n    </div>\n\n</div>\n\n<style>\n    @keyframes pulse {\n        0% {\n            transform: scale(1);\n        }\n\n        50% {\n            transform: scale(1.15);\n        }\n\n        100% {\n            transform: scale(1);\n        }\n    }\n</style>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 810,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "14f57c51ee74f6f1",
+        "type": "ui_template",
+        "z": "42724ec9b7f2ae5f",
+        "g": "bc60ce7888013f2d",
+        "group": "df7b188493601c51",
+        "name": "Fan State",
+        "order": 17,
+        "width": 12,
+        "height": 7,
+        "format": "<div\n    style=\"text-align:center; padding:15px; border-radius:12px; background:#1e1e1e; color:white; font-size:1.4em; box-shadow:0 0 10px rgba(0,0,0,0.4);\">\n\n    <div ng-if=\"msg.payload == 1\">\n        <div style=\"font-size:3em; animation: spin 1s linear infinite;\">\n            🌀\n        </div>\n        <div style=\"margin-top:5px; font-weight:bold; color:#4CAF50;\">\n            FAN ON\n        </div>\n    </div>\n\n    <div ng-if=\"msg.payload == 0\">\n        <div style=\"font-size:3em; opacity:0.4;\">\n            🌀\n        </div>\n        <div style=\"margin-top:5px; font-weight:bold; color:#F44336;\">\n            FAN OFF\n        </div>\n    </div>\n\n</div>\n\n<style>\n    @keyframes spin {\n        0% {\n            transform: rotate(0deg);\n        }\n\n        100% {\n            transform: rotate(360deg);\n        }\n    }\n</style>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 800,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "df7b188493601c51",
+        "type": "ui_group",
+        "name": "IOT MONITORING",
+        "tab": "c4334baf75233ccc",
+        "order": 1,
+        "disp": true,
+        "width": 30,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "c4334baf75233ccc",
+        "type": "ui_tab",
+        "name": "IOT MONITORING",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "1dc27fb0fe32dab0",
+        "type": "mqtt-broker",
+        "name": "emqx Broker",
+        "broker": "broker.emqx.io",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "3978826a125bd6c6",
+        "type": "sqlitedb",
+        "db": "C:\\Users\\User\\Desktop\\IOT_SEM3\\IOT_LAB7\\IOTLAB7FINAL.sqlite",
+        "mode": "RWC"
+    },
+    {
+        "id": "503394798f01f3e2",
+        "type": "ui_group",
+        "name": "Smart Environmental Monitoring & Control System (HTTP & MQTT_NODERED)",
+        "tab": "012aa3a7d703d074",
+        "order": 1,
+        "disp": true,
+        "width": 29,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "012aa3a7d703d074",
+        "type": "ui_tab",
+        "name": "IOT_DataMonitoring",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "a49f6a6718638d6e",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-node-sqlite": "1.1.1",
+            "node-red-node-ui-table": "0.4.5",
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
